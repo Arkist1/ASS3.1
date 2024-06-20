@@ -7,8 +7,8 @@ class Memory:
     def __init__(self):
         self.transition_deque = deque()
 
-    def store(self, transitie: Transition):
-        self.transition_deque.append(transitie)
+    def store(self, transition: Transition):
+        self.transition_deque.append(transition)
         return
 
     def sample(self, batch_size=16):

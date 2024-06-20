@@ -22,7 +22,6 @@ def run_environment(steps, agent):
             print(observation)
 
         state = next_state
-
     env.close()
 
 
