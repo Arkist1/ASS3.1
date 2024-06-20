@@ -27,12 +27,13 @@ try:
 
                 returns += reward
                 agent.memory.store(Transition(state, next_state, reward, action))
-
+                # print(len(agent.memory.transition_deque))
                 if terminated or truncated:
+                    print(reward)
                     break
 
                 state = next_state
-                agent.train()
+                agent.train(learning_rate=0.001)
 
             t2 = datetime.now()
             last_100.append(returns)
@@ -54,11 +55,11 @@ try:
         env.close()
 
     policy = None
-    #  policy = "./model.pt"
+    policy = "./model.pt"
 
     main_agent = Agent(epsilon=0.1, policy=policy)
     episodes = 2_000
-    max_steps = 1000
+    max_steps = 500
     run_environment(episodes, max_steps, main_agent)
 
 except BaseException as e:
