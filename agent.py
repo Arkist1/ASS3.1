@@ -17,13 +17,13 @@ class Agent:
         if random.random() <= self.epsilon:
             return random.choice(self.moves)
         else:
-            self.policy.get_move()
+            return self.policy.select_move(state)
 
     def store_transition(self, transition):
-        self.memory.store_transition(transition)
+        self.memory.store(transition)
 
     def train(self):
-        samples = self.memory.sample()
+        samples = self.memory.sample(16)
 
         for state, state_prime, reward, action in samples:
             pass  # do stuff
