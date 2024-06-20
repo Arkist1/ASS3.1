@@ -8,7 +8,7 @@ import torch as pt
 
 
 class Agent:
-    def __init__(self, memory_size, sample_size, epsilon, discount, lr, policy) -> None:
+    def __init__(self, memory_size, sample_size, epsilon, discount, lr, policy, decay_amt) -> None:
         self.memory = Memory(memory_size)
         self.policy = Policy(policy, lr=lr)
 
@@ -17,6 +17,7 @@ class Agent:
         self.epsilon = epsilon
         self.discount = discount
         self.sample_size = sample_size
+        self.decay_amt = decay_amt
         
         self.memory_filled = False
 
@@ -69,4 +70,4 @@ class Agent:
 
 
     def decay(self):
-        self.epsilon = self.epsilon * 0.996
+        self.epsilon = self.epsilon * self.decay_amt

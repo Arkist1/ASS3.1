@@ -79,6 +79,7 @@ try:
     lr = 0.001
     discount = 0.99
     epsilon = 0.1
+    decay = 0.996
     
     last_steps = 20
     stop_score = 200
@@ -88,7 +89,8 @@ try:
                        memory_size=memory_size, 
                        discount=discount, 
                        lr=lr, 
-                       policy=policy)
+                       policy=policy,
+                       decay_amt=decay)
     run_environment(episodes=episodes, 
                     max_steps=max_steps, 
                     agent=main_agent, 
