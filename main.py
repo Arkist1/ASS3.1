@@ -26,13 +26,15 @@ try:
                 next_state, reward, terminated, truncated, info = env.step(action)
 
                 returns += reward
-                agent.memory.store(Transition(state, next_state, reward, action))
+                agent.memory.store(
+                    Transition(state, next_state, reward, action, terminated)
+                )
 
                 if terminated or truncated:
                     break
 
                 state = next_state
-                agent.train()
+                agent.new_train()
 
             t2 = datetime.now()
             last_100.append(returns)
@@ -58,7 +60,7 @@ try:
 
     main_agent = Agent(epsilon=0.1, policy=policy)
     episodes = 2_000
-    max_steps = 1000
+    max_steps = 200
     run_environment(episodes, max_steps, main_agent)
 
 except BaseException as e:

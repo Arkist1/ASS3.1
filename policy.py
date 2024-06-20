@@ -6,9 +6,8 @@ from transition import Transition
 
 
 class Policy(pt.nn.Module):
-    def __init__(self, path) -> None:
+    def __init__(self, path, lr=0.01) -> None:
         super(Policy, self).__init__()
-        self.flatten = pt.nn.Flatten()
 
         if path:
             self.model = pt.load(path)
@@ -19,13 +18,13 @@ class Policy(pt.nn.Module):
                 pt.nn.Linear(512, 512),
                 pt.nn.ReLU(),
                 pt.nn.Linear(512, 4),
-            )
+            ).to(device="cuda")
 
-        self.optimizer = pt.optim.Adam(self.model.parameters(), lr=0.01)
+        self.optimizer = pt.optim.Adam(self.model.parameters(), lr=lr)
         self.loss = pt.nn.MSELoss()
 
     def forward(self, state):
-        state = pt.Tensor(state)
+        state = pt.Tensor(state).to(device="cuda")
         return list(self.model(state))
 
     def select_action(self, state):

@@ -9,7 +9,7 @@ import torch as pt
 
 class Agent:
     def __init__(self, epsilon, policy) -> None:
-        self.memory = Memory(1000)
+        self.memory = Memory(100_000)
         self.policy = Policy(policy)
         self.moves = [0, 1, 2, 3]
 
@@ -39,10 +39,10 @@ class Agent:
             self.policy.optimizer.zero_grad()
 
             # Forward pass
-            outputs_pred = self.policy.model(pt.Tensor(state))
+            outputs_pred = self.policy.model(pt.Tensor(state).to(device="cuda"))
 
             # Compute loss
-            loss = self.policy.loss(outputs_pred, pt.Tensor(q_state))
+            loss = self.policy.loss(outputs_pred, pt.Tensor(q_state).to(device="cuda"))
 
             # Backward pass
             loss.backward()
