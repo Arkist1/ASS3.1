@@ -19,7 +19,6 @@ def run_environment(steps, agent):
 
         if terminated or truncated:
             observation, info = env.reset()
-            print(observation)
 
         state = next_state
     env.close()

@@ -16,11 +16,13 @@ class Policy(pt.nn.Module):
             pt.nn.Linear(512, 4),
         )
 
-    def select_action(self, state):
+    def forward(self, state):
         state = pt.Tensor(state)
         logits = list(self.model(state))
-        action = logits.index(max(logits))
-        return action  # use model to get action
+
+    def select_action(self, state):
+        logits = self.forward(state)
+        return logits.index(max(logits))  # use model to get action
 
     def save_model(self, path="/model.pt"):
         pt.save(self.model, path)
