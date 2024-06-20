@@ -5,4 +5,11 @@ from transition import Transition
 
 
 class Policy:
-    pass
+    def __init__(self) -> None:
+        self.model = 1  # make model here
+
+    def select_move(self, state):
+        return self.model.calculate(state)  # use model to get action
+
+    def save_model(self, path="/model.pt"):
+        pt.save(self.model, path)
