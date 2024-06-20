@@ -48,10 +48,10 @@ class Agent:
         self.policy.optimizer.zero_grad()
 
         # Forward pass
-        outputs_pred = self.policy.model(pt.Tensor(np.array(X)))
+        outputs_pred = self.policy.model(pt.Tensor(np.array(X)).to("cuda"))
 
         # Compute loss
-        loss = self.policy.loss(outputs_pred, pt.Tensor(Y))
+        loss = self.policy.loss(outputs_pred, pt.Tensor(Y).to("cuda"))
 
         # Backward pass
         loss.backward()

@@ -18,13 +18,13 @@ class Policy(pt.nn.Module):
                 pt.nn.Linear(150, 120),
                 pt.nn.ReLU(),
                 pt.nn.Linear(120, 4),
-            )
+            ).to("cuda")
 
         self.optimizer = pt.optim.Adam(self.model.parameters(), lr=lr)
         self.loss = pt.nn.MSELoss()
 
     def forward(self, state):
-        state = pt.Tensor(state)
+        state = pt.Tensor(state).to("cuda")
         return list(self.model(state))
 
     def select_action(self, state):
