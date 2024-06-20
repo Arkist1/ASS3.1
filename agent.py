@@ -9,7 +9,7 @@ import torch as pt
 
 class Agent:
     def __init__(self, epsilon, policy) -> None:
-        self.memory = Memory(100_000)
+        self.memory = Memory(10_000)
         self.policy = Policy(policy)
         self.moves = [0, 1, 2, 3]
 
@@ -25,7 +25,7 @@ class Agent:
         self.memory.store(transition)
 
     def train(self, learning_rate):
-        samples = self.memory.sample(100)
+        samples = self.memory.sample(64)
         X = []
         Y = []
 
@@ -35,7 +35,7 @@ class Agent:
             else:
                 q_prime = self.policy.forward(state_prime)
                 a_prime = q_prime.index(max(q_prime))
-                a_value = reward + learning_rate * (0.9 * q_prime[a_prime])
+                a_value = reward + learning_rate * (0.99 * q_prime[a_prime])
 
             q_state = self.policy.forward(state)
 
@@ -60,4 +60,4 @@ class Agent:
         self.policy.optimizer.step()
 
     def decay(self):
-        self.epsilon = self.epsilon / 1.005
+        self.epsilon = self.epsilon * 0.996

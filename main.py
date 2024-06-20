@@ -56,11 +56,11 @@ try:
         env.close()
 
     policy = None
-    #  policy = "./model.pt"
+    # policy = "./model.pt"
 
-    main_agent = Agent(epsilon=0.1, policy=policy)
+    main_agent = Agent(epsilon=1, policy=policy)
     episodes = 2_000
-    max_steps = 500
+    max_steps = 1000
     run_environment(episodes, max_steps, main_agent)
 
 except BaseException as e:
