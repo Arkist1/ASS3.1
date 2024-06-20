@@ -1,0 +1,2 @@
+nr of episodes trained 255
+current last mean of 203.0 at 255 episodes

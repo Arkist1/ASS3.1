@@ -8,13 +8,17 @@ import torch as pt
 
 
 class Agent:
-    def __init__(self, epsilon, policy) -> None:
-        self.memory = Memory(100_000)
-        self.policy = Policy(policy)
+    def __init__(self, memory_size, sample_size, epsilon, discount, lr, policy) -> None:
+        self.memory = Memory(memory_size)
+        self.policy = Policy(policy, lr=lr)
 
         self.moves = [0, 1, 2, 3]
 
         self.epsilon = epsilon
+        self.discount = discount
+        self.sample_size = sample_size
+        
+        self.memory_filled = False
 
     def select_action(self, state):
         if random.random() <= self.epsilon:
@@ -25,10 +29,13 @@ class Agent:
     def store_transition(self, transition):
         self.memory.store(transition)
 
-    def train(self, learning_rate):
-        samples = self.memory.sample(10)
-        if len(samples) < 10:
-            return
+    def train(self):
+        if not self.memory_filled:
+            if not len(self.memory.transition_deque) > self.sample_size:
+                return
+            self.memory_filled = True
+
+        samples = self.memory.sample(self.sample_size)
 
         X = []
         Y = []
@@ -36,7 +43,7 @@ class Agent:
         for state, state_prime, action, reward, terminal in samples:
             q_prime = list(self.policy.model(pt.Tensor(state_prime)))
             a_prime = q_prime.index(max(q_prime))
-            a_value = reward + (0.99 * q_prime[a_prime]) * (1 - terminal)
+            a_value = reward + (self.discount * q_prime[a_prime]) * (1 - terminal)
 
             q_state = self.policy.model(pt.Tensor(state))
             X.append(q_state)
