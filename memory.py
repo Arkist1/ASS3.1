@@ -14,7 +14,7 @@ class Memory:
         self.transition_deque.append(transition)
         return
 
-    def sample(self, batch_size=100):
+    def sample(self, batch_size=64):
         if len(self.transition_deque) < batch_size:
             return self.transition_deque
         batch = random.sample(list(self.transition_deque), batch_size)
