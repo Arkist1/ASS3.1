@@ -18,7 +18,7 @@ class Policy(pt.nn.Module):
 
     def forward(self, state):
         state = pt.Tensor(state)
-        logits = list(self.model(state))
+        return list(self.model(state))
 
     def select_action(self, state):
         logits = self.forward(state)
