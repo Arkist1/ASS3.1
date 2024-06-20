@@ -25,7 +25,7 @@ class Agent:
         self.memory.store(transition)
 
     def train(self):
-        samples = self.memory.sample(16)
+        samples = self.memory.sample(33)
 
         for state, state_prime, reward, action in samples:
             q_prime = self.policy.forward(state_prime)
