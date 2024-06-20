@@ -48,7 +48,7 @@ class Agent:
         self.policy.optimizer.zero_grad()
 
         # Forward pass
-        outputs_pred = self.policy.model(pt.Tensor(X))
+        outputs_pred = self.policy.model(pt.Tensor(np.array(X)))
 
         # Compute loss
         loss = self.policy.loss(outputs_pred, pt.Tensor(Y))
@@ -60,4 +60,4 @@ class Agent:
         self.policy.optimizer.step()
 
     def decay(self):
-        self.epsilon = self.epsilon / 1.5
+        self.epsilon = self.epsilon / 1.005

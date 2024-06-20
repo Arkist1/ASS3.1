@@ -34,6 +34,7 @@ try:
 
                 state = next_state
                 agent.train(learning_rate=0.001)
+                agent.decay()
 
             t2 = datetime.now()
             last_100.append(returns)
