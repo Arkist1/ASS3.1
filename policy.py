@@ -7,11 +7,9 @@ from transition import Transition
 class Policy(pt.nn.Module):
     def __init__(self) -> None:
         super(Policy, self).__init__()
-        self.model = 1  # make model here
-
         self.flatten = pt.nn.Flatten()
-        self.layers = pt.nn.Sequential(
-            pt.nn.Linear(9, 512),
+        self.model = pt.nn.Sequential(
+            pt.nn.Linear(8, 512),
             pt.nn.ReLU(),
             pt.nn.Linear(512, 512),
             pt.nn.ReLU(),
@@ -19,10 +17,10 @@ class Policy(pt.nn.Module):
         )
 
     def select_action(self, state):
-        x = self.flatten(state)
-        logits = self.linear_relu_stack(x)
-        print(logits)
-        return max(logits)  # use model to get action
+        state = pt.Tensor(state)
+        logits = list(self.model(state))
+        action = logits.index(max(logits))
+        return action  # use model to get action
 
     def save_model(self, path="/model.pt"):
         pt.save(self.model, path)

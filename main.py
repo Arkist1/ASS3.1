@@ -11,7 +11,7 @@ def run_environment(steps, agent):
     for _ in range(steps):
         action = agent.select_action(state)
         # action = env.action_space.sample()
-        print(action)  # this is where you would insert your policy
+        print("Action chosen:", action)  # this is where you would insert your policy
 
         next_state, reward, terminated, truncated, info = env.step(action)
 
