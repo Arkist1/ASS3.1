@@ -1,20 +1,28 @@
 import numpy as np
+import numpy
 import torch as pt
 
 from transition import Transition
 
 
 class Policy(pt.nn.Module):
-    def __init__(self) -> None:
+    def __init__(self, path) -> None:
         super(Policy, self).__init__()
         self.flatten = pt.nn.Flatten()
-        self.model = pt.nn.Sequential(
-            pt.nn.Linear(8, 512),
-            pt.nn.ReLU(),
-            pt.nn.Linear(512, 512),
-            pt.nn.ReLU(),
-            pt.nn.Linear(512, 4),
-        )
+
+        if path:
+            self.model = pt.load(path)
+        else:
+            self.model = pt.nn.Sequential(
+                pt.nn.Linear(8, 512),
+                pt.nn.ReLU(),
+                pt.nn.Linear(512, 512),
+                pt.nn.ReLU(),
+                pt.nn.Linear(512, 4),
+            )
+
+        self.optimizer = pt.optim.Adam(self.model.parameters(), lr=0.01)
+        self.loss = pt.nn.MSELoss()
 
     def forward(self, state):
         state = pt.Tensor(state)

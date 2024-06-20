@@ -4,11 +4,13 @@ import random
 from memory import Memory
 from policy import Policy
 
+import torch as pt
+
 
 class Agent:
-    def __init__(self, epsilon) -> None:
+    def __init__(self, epsilon, policy) -> None:
         self.memory = Memory()
-        self.policy = Policy()
+        self.policy = Policy(policy)
         self.moves = [0, 1, 2, 3]
 
         self.epsilon = epsilon
@@ -29,14 +31,24 @@ class Agent:
             q_prime = self.policy.forward(state_prime)
             a_prime = q_prime.index(max(q_prime))
             a_value = reward + 0.9 * q_prime[a_prime]
-            
+
             q_state = self.policy.forward(state)
-            q_state[a_prime] = a_value
+            q_state[action] = a_value
 
+            # Zero the gradients
+            self.policy.optimizer.zero_grad()
 
+            # Forward pass
+            outputs_pred = self.policy.model(pt.Tensor(state))
 
+            # Compute loss
+            loss = self.policy.loss(outputs_pred, pt.Tensor(q_state))
 
-        s_prime = self.select_action()
+            # Backward pass
+            loss.backward()
+
+            # Update weights
+            self.policy.optimizer.step()
 
     def decay(self):
         self.epsilon = self.epsilon / 1.5
