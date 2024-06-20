@@ -55,7 +55,7 @@ try:
         env.close()
 
     policy = None
-    policy = "./model.pt"
+    #  policy = "./model.pt"
 
     main_agent = Agent(epsilon=0.1, policy=policy)
     episodes = 2_000

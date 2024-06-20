@@ -24,7 +24,7 @@ class Policy(pt.nn.Module):
         self.loss = pt.nn.MSELoss()
 
     def forward(self, state):
-        state = pt.Tensor(state).to(device="cuda")
+        state = pt.Tensor(state)
         return list(self.model(state))
 
     def select_action(self, state):
