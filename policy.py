@@ -6,7 +6,7 @@ from transition import Transition
 
 
 class Policy(pt.nn.Module):
-    def __init__(self, path, lr=0.01) -> None:
+    def __init__(self, path, lr=0.001) -> None:
         super(Policy, self).__init__()
 
         if path:
@@ -25,10 +25,10 @@ class Policy(pt.nn.Module):
 
     def forward(self, state):
         state = pt.Tensor(state)
-        return self.model(state)
+        return list(self.model(state))
 
     def select_action(self, state):
-        logits = list(self.forward(state))
+        logits = self.forward(state)
         return logits.index(max(logits))  # use model to get action
 
     def save_model(self, path="/model.pt"):
