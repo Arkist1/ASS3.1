@@ -9,7 +9,7 @@ import torch as pt
 
 class Agent:
     def __init__(self, epsilon, policy) -> None:
-        self.memory = Memory(5000)
+        self.memory = Memory(100_000)
         self.policy = Policy(policy)
         self.moves = [0, 1, 2, 3]
 

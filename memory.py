@@ -2,15 +2,15 @@ from transition import Transition
 from collections import deque
 import random
 
+import torch
+import numpy as np
+
 
 class Memory:
     def __init__(self, capacity):
-        self.transition_deque = deque()
-        self.capacity = capacity
+        self.transition_deque = deque(maxlen=capacity)
 
     def store(self, transition: Transition):
-        if len(self.transition_deque) >= self.capacity:
-            self.transition_deque.popleft()
         self.transition_deque.append(transition)
         return
 
