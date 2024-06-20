@@ -9,7 +9,7 @@ import torch as pt
 
 class Agent:
     def __init__(self, epsilon, policy) -> None:
-        self.memory = Memory(10_000)
+        self.memory = Memory(100_000)
         self.policy = Policy(policy)
         self.moves = [0, 1, 2, 3]
 
@@ -35,23 +35,23 @@ class Agent:
             else:
                 q_prime = self.policy.forward(state_prime)
                 a_prime = q_prime.index(max(q_prime))
-                a_value = reward + learning_rate * (0.99 * q_prime[a_prime])
+                a_value = reward + (0.99 * q_prime[a_prime])
 
             q_state = self.policy.forward(state)
 
-            # q_state[action] = (a_value - q_state[action])**2
             q_state[action] = a_value
             X.append(state)
             Y.append(q_state)
-
-        # Zero the gradients
-        self.policy.optimizer.zero_grad()
 
         # Forward pass
         outputs_pred = self.policy.model(pt.Tensor(np.array(X)))
 
         # Compute loss
         loss = self.policy.loss(outputs_pred, pt.Tensor(Y))
+
+        # Zero the gradients
+        
+        self.policy.optimizer.zero_grad()
 
         # Backward pass
         loss.backward()

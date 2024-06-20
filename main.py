@@ -33,8 +33,9 @@ try:
                     break
 
                 state = next_state
-                agent.train(learning_rate=0.001)
-                agent.decay()
+                if len(agent.memory.transition_deque) >= 64:
+                    agent.train(learning_rate=0.001)
+                    agent.decay()
 
             t2 = datetime.now()
             last_100.append(returns)
