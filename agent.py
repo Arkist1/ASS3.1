@@ -34,26 +34,26 @@ class Agent:
         Y = []
 
         for state, state_prime, action, reward, terminal in samples:
-
-            q_prime = self.policy.forward(state_prime)
+            q_prime = list(self.policy.model(pt.Tensor(state_prime)))
             a_prime = q_prime.index(max(q_prime))
             a_value = reward + (0.99 * q_prime[a_prime]) * (1 - terminal)
 
+            q_state = self.policy.model(pt.Tensor(state))
+            X.append(q_state)
 
-            q_state = self.policy.forward(state)
+            q_state = list(q_state)
             q_state[action] = a_value
 
-            X.append(state)
             Y.append(q_state)
 
         # Forward pass
-        outputs_pred = self.policy.model(pt.Tensor(np.array(X)))
+        # outputs_pred = self.policy.model(pt.Tensor(np.array(X)))
 
         # Compute loss
-        loss = self.policy.loss(outputs_pred, pt.Tensor(Y))
+        loss = self.policy.loss(pt.stack(X), pt.Tensor(Y))
+        # print(loss)
 
         # Zero the gradients
-        
         self.policy.optimizer.zero_grad()
 
         # Backward pass

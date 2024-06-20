@@ -23,12 +23,8 @@ class Policy(pt.nn.Module):
         self.optimizer = pt.optim.Adam(self.model.parameters(), lr=lr)
         self.loss = pt.nn.MSELoss()
 
-    def forward(self, state):
-        state = pt.Tensor(state)
-        return list(self.model(state))
-
     def select_action(self, state):
-        logits = self.forward(state)
+        logits = list(self.model(pt.Tensor(state)))
         return logits.index(max(logits))  # use model to get action
 
     def save_model(self, path="/model.pt"):
