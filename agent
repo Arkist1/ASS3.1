@@ -1,0 +1,11 @@
+from memory import Memory
+from policy import Policy
+
+
+class Agent:
+    def __init__(self) -> None:
+        self.memory = Memory()
+        self.policy = Policy()
+
+    def choose_move(state):
+        pass
