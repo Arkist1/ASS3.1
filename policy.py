@@ -13,12 +13,12 @@ class Policy(pt.nn.Module):
             self.model = pt.load(path)
         else:
             self.model = pt.nn.Sequential(
-                pt.nn.Linear(8, 512),
+                pt.nn.Linear(8, 150),
                 pt.nn.ReLU(),
-                pt.nn.Linear(512, 512),
+                pt.nn.Linear(150, 120),
                 pt.nn.ReLU(),
-                pt.nn.Linear(512, 4),
-            ).to(device="cuda")
+                pt.nn.Linear(120, 4),
+            )
 
         self.optimizer = pt.optim.Adam(self.model.parameters(), lr=lr)
         self.loss = pt.nn.MSELoss()
