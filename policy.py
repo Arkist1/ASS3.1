@@ -19,7 +19,7 @@ class Policy(pt.nn.Module):
         )
 
     def select_action(self, state):
-        x = self.flatten(x)
+        x = self.flatten(state)
         logits = self.linear_relu_stack(x)
         print(logits)
         return max(logits)  # use model to get action

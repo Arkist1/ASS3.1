@@ -17,7 +17,7 @@ class Agent:
         if random.random() <= self.epsilon:
             return random.choice(self.moves)
         else:
-            return self.policy.select_move(state)
+            return self.policy.select_action(state)
 
     def store_transition(self, transition):
         self.memory.store(transition)
