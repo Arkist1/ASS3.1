@@ -4,10 +4,13 @@ import random
 
 
 class Memory:
-    def __init__(self):
+    def __init__(self, capacity):
         self.transition_deque = deque()
+        self.capacity = capacity
 
     def store(self, transition: Transition):
+        if len(self.transition_deque) >= self.capacity:
+            self.transition_deque.popleft()
         self.transition_deque.append(transition)
         return
 
