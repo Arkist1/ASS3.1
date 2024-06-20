@@ -26,7 +26,15 @@ class Agent:
         samples = self.memory.sample(16)
 
         for state, state_prime, reward, action in samples:
-            pass  # do stuff
+            q_prime = self.policy.forward(state_prime)
+            a_prime = q_prime.index(max(q_prime))
+            a_value = reward + 0.9 * q_prime[a_prime]
+            
+            q_state = self.policy.forward(state)
+            q_state[a_prime] = a_value
+
+
+
 
         s_prime = self.select_action()
 

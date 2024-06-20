@@ -12,5 +12,7 @@ class Memory:
         return
 
     def sample(self, batch_size=16):
+        if len(self.transition_deque) < batch_size:
+            return self.transition_deque
         batch = random.sample(list(self.transition_deque), batch_size)
         return batch
