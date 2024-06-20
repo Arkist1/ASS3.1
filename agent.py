@@ -9,7 +9,7 @@ import torch as pt
 
 class Agent:
     def __init__(self, epsilon, policy) -> None:
-        self.memory = Memory()
+        self.memory = Memory(1000)
         self.policy = Policy(policy)
         self.moves = [0, 1, 2, 3]
 
@@ -25,7 +25,7 @@ class Agent:
         self.memory.store(transition)
 
     def train(self):
-        samples = self.memory.sample(33)
+        samples = self.memory.sample(32)
 
         for state, state_prime, reward, action in samples:
             q_prime = self.policy.forward(state_prime)
