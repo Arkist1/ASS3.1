@@ -82,10 +82,10 @@ class Agent:
         with open(path, "r") as f:
             for line in f.readlines():
                 vars = json.loads(line)
-                tr = Transition(state=[float(x) for x in vars["state"]], 
-                                             next_state=[float(x) for x in vars["next_state"]], 
+                tr = Transition(state=np.array([np.float32(x) for x in vars["state"]]), 
+                                             next_state=np.array([np.float32(x) for x in vars["next_state"]]), 
                                              action=int(vars["action"]), 
-                                             reward=float(vars["reward"]), 
+                                             reward=np.float32(vars["reward"]), 
                                              terminal=bool(["terminal"]))
                 self.memory.store(tr)
 

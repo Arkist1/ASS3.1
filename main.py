@@ -65,7 +65,7 @@ try:
             for _ in range(max_steps):
                 action = agent.select_action(state)
 
-                next_state, reward, terminated, truncated, info = env.step(action)
+                next_state, reward, terminated, truncated, _ = env.step(action)
 
                 returns += reward
                 agent.memory.store(
@@ -127,9 +127,9 @@ try:
 
     lr = 0.001 # learning rate
     discount = 0.99 # discount
-    epsilon = 0.001 # epsilon, value for taking random moves
+    epsilon = 0 # epsilon, value for taking random moves
     decay = 0.996 # decay of epsilon
-    averaging_rate = 0.01 # averaging rate for doubleq
+    averaging_rate = 0.1 # averaging rate for doubleq
     
     last_steps_n = 20 # last number of steps to measure score by
     stop_score = 250 # average score to achieve to finish training prematurely
