@@ -14,6 +14,8 @@ GREEN = '\033[0;37;42m'
 RED = '\033[0;37;41m'
 BLACK = '\033[0m'
 
+DOUBLEQ = True
+
 try:
     def run_environment(episodes, max_steps, agent, last_steps_n, stop_score):
         env = gym.make("LunarLander-v2", render_mode="human")
@@ -38,7 +40,12 @@ try:
                     break
 
                 state = next_state
-                agent.train()
+
+                if DOUBLEQ:
+                    agent.double_train()
+                else:
+                    agent.train()
+
                 agent.decay()
 
             t2 = datetime.now()
@@ -67,8 +74,12 @@ try:
 
         env.close()
 
-    policy = None
-    # policy = "./model.pt"
+    if DOUBLEQ: 
+        policy = None
+        # policy = ["./model.pt", "./model_target.pt"]
+    else:
+        policy = None
+        # policy = "./model.pt"
 
     episodes = 2_000
     max_steps = 1_000
@@ -80,6 +91,7 @@ try:
     discount = 0.99
     epsilon = 0.1
     decay = 0.996
+    averaging_rate = 0.01
     
     last_steps = 20
     stop_score = 200
@@ -90,7 +102,9 @@ try:
                        discount=discount, 
                        lr=lr, 
                        policy=policy,
-                       decay_amt=decay)
+                       decay_amt=decay,
+                       averaging_rate=averaging_rate,
+                       doubleq=DOUBLEQ)
     run_environment(episodes=episodes, 
                     max_steps=max_steps, 
                     agent=main_agent, 
@@ -105,4 +119,7 @@ except BaseException as e:
 
 finally:
     print("Saving model")
-    main_agent.policy.save_model(f"./{datetime.now().strftime('%m-%d_%H-%M')}.pt")
+    if DOUBLEQ:
+        main_agent.policy.save_model(f"./{datetime.now().strftime('%m-%d_%H-%M')}.pt", f"./{datetime.now().strftime('%m-%d_%H-%M')}_target.pt")
+    else:
+        main_agent.policy.save_model(f"./{datetime.now().strftime('%m-%d_%H-%M')}.pt")

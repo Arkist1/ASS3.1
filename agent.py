@@ -8,9 +8,9 @@ import torch as pt
 
 
 class Agent:
-    def __init__(self, memory_size, sample_size, epsilon, discount, lr, policy, decay_amt) -> None:
+    def __init__(self, memory_size, sample_size, epsilon, discount, lr, policy, decay_amt, averaging_rate, doubleq) -> None:
         self.memory = Memory(memory_size)
-        self.policy = Policy(policy, lr=lr)
+        self.policy = Policy(policy, doubleq, lr=lr)
 
         self.moves = [0, 1, 2, 3]
 
@@ -18,6 +18,7 @@ class Agent:
         self.discount = discount
         self.sample_size = sample_size
         self.decay_amt = decay_amt
+        self.averaging_rate = averaging_rate
         
         self.memory_filled = False
 
@@ -32,7 +33,7 @@ class Agent:
 
     def train(self):
         if not self.memory_filled:
-            if not len(self.memory.transition_deque) > self.sample_size:
+            if not len(self.memory.transition_deque) >= self.sample_size:
                 return
             self.memory_filled = True
 
@@ -54,19 +55,60 @@ class Agent:
 
             Y.append(q_state)
 
-        # Forward pass
-        # outputs_pred = self.policy.model(pt.Tensor(np.array(X)))
-
         # Compute loss
         loss = self.policy.loss(pt.stack(X), pt.Tensor(Y))
-        # print(loss)
 
         # Zero the gradients
         self.policy.optimizer.zero_grad()
 
         # Backward pass
         loss.backward()
+
+        # Optimizer step
         self.policy.optimizer.step()
+
+    def double_train(self):
+        if not self.memory_filled:
+            if not len(self.memory.transition_deque) >= self.sample_size:
+                return
+            self.memory_filled = True
+
+        samples = self.memory.sample(self.sample_size)
+
+        X = []
+        Y = []
+
+        for state, state_prime, action, reward, terminal in samples:
+            q_prime = list(self.policy.target_model(pt.Tensor(state_prime)))
+            a_prime = q_prime.index(max(q_prime))
+            a_value = reward + (self.discount * q_prime[a_prime]) * (1 - terminal)
+
+            q_state = self.policy.model(pt.Tensor(state))
+            X.append(q_state)
+
+            q_state = list(q_state)
+            q_state[action] = a_value
+
+            Y.append(q_state)
+
+        # Compute loss
+        loss = self.policy.loss(pt.stack(X), pt.Tensor(Y))
+
+        # Zero the gradients
+        self.policy.optimizer.zero_grad()
+
+        # Backward pass
+        loss.backward()
+
+        # Optimizer step
+        self.policy.optimizer.step()
+
+        # Update target network params
+        self.soft_update()
+
+    def soft_update(self):
+        for target_param, local_param in zip(self.policy.target_model.parameters(), self.policy.model.parameters()):
+            target_param.data.copy_(self.averaging_rate * local_param.data + (1.0 - self.averaging_rate) * target_param.data)
 
 
     def decay(self):
