@@ -115,7 +115,7 @@ try:
         return episode, last_steps, max_returns_episode, max_returns
 
 
-    name = "" # name of the model
+    name = "06-21_21-37" # name of the model
 
     DOUBLEQ = True # use double q learning?
 
@@ -127,12 +127,12 @@ try:
 
     lr = 0.001 # learning rate
     discount = 0.99 # discount
-    epsilon = 0.1 # epsilon, value for taking random moves
+    epsilon = 0.001 # epsilon, value for taking random moves
     decay = 0.996 # decay of epsilon
     averaging_rate = 0.01 # averaging rate for doubleq
     
     last_steps_n = 20 # last number of steps to measure score by
-    stop_score = 200 # average score to achieve to finish training prematurely
+    stop_score = 250 # average score to achieve to finish training prematurely
 
     main_agent = Agent(epsilon=epsilon, 
                         sample_size=sample_size, 

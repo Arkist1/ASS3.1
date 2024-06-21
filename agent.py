@@ -34,9 +34,6 @@ class Agent:
         else:
             return self.policy.select_action(state)
 
-    def store_transition(self, transition):
-        self.memory.store(transition)
-
     def train(self):
         if not self.memory_filled:
             if not len(self.memory.transition_deque) >= self.sample_size:
@@ -90,7 +87,6 @@ class Agent:
                                              action=int(vars["action"]), 
                                              reward=float(vars["reward"]), 
                                              terminal=bool(["terminal"]))
-                
                 self.memory.store(tr)
 
     def double_train(self):
