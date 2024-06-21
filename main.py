@@ -15,8 +15,6 @@ GREEN = '\033[0;37;42m'
 RED = '\033[0;37;41m'
 BLACK = '\033[0m'
 
-DOUBLEQ = True
-
 last_episode = 0
 max_returns = 0
 max_returns_episode = 0
@@ -117,22 +115,24 @@ try:
         return episode, last_steps, max_returns_episode, max_returns
 
 
-    name = ""
+    name = "" # name of the model
 
-    episodes = 300
-    max_steps = 1_000
+    DOUBLEQ = True # use double q learning?
 
-    memory_size = 100_000
-    sample_size = 64
+    episodes = 400 # max number of episodes
+    max_steps = 1_000 # max steps in an episode
 
-    lr = 0.001
-    discount = 0.99
-    epsilon = 0.1
-    decay = 0.996
-    averaging_rate = 0.01
+    memory_size = 100_000 # max memory size
+    sample_size = 64 # train samples per step
+
+    lr = 0.001 # learning rate
+    discount = 0.99 # discount
+    epsilon = 0.1 # epsilon, value for taking random moves
+    decay = 0.996 # decay of epsilon
+    averaging_rate = 0.01 # averaging rate for doubleq
     
-    last_steps_n = 20
-    stop_score = 300
+    last_steps_n = 20 # last number of steps to measure score by
+    stop_score = 200 # average score to achieve to finish training prematurely
 
     main_agent = Agent(epsilon=epsilon, 
                         sample_size=sample_size, 
