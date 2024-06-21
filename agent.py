@@ -3,14 +3,20 @@ import numpy as np
 
 from memory import Memory
 from policy import Policy
+from transition import Transition
 
 import torch as pt
 
+import json
+import os
+
 
 class Agent:
-    def __init__(self, memory_size, sample_size, epsilon, discount, lr, policy, decay_amt) -> None:
+    def __init__(self, memory_size, memory_path, sample_size, epsilon, discount, lr, policy, decay_amt) -> None:
         self.memory = Memory(memory_size)
         self.policy = Policy(policy, lr=lr)
+
+        self.load_memory(memory_path)
 
         self.moves = [0, 1, 2, 3]
 
@@ -67,6 +73,26 @@ class Agent:
         # Backward pass
         loss.backward()
         self.policy.optimizer.step()
+
+    def save_memory(self, path):
+        with open(path, "w") as outfile:
+            for x in self.memory.transition_deque:
+                outfile.write(json.dumps(x.serialize()) + "\n")
+
+    def load_memory(self, path):
+        if not os.path.exists(path):
+            return
+
+        with open(path, "r") as f:
+            for line in f.readlines():
+                vars = json.loads(line)
+                tr = Transition(state=[float(x) for x in vars["state"]], 
+                                             next_state=[float(x) for x in vars["next_state"]], 
+                                             action=int(vars["action"]), 
+                                             reward=float(vars["reward"]), 
+                                             terminal=bool(["terminal"]))
+                
+                self.memory.store(tr)
 
 
     def decay(self):

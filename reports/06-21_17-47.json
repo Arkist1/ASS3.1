@@ -1,0 +1,18 @@
+{
+    "max_episodes": "2000",
+    "episodes_finished": "-1",
+    "max_steps": "1000",
+    "max_memory_size": "100000",
+    "memory_size": "302",
+    "sample_size": "64",
+    "lr": "0.001",
+    "discount": "0.99",
+    "start_epsilon": "0.02",
+    "last_epsilon": "0.007643129487915734",
+    "decay": "0.996",
+    "max_n_steps": "20",
+    "last_scores": "[]",
+    "stop_score": "300",
+    "highest_score": "-1",
+    "highest_score_episode": "-1"
+}

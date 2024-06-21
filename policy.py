@@ -1,6 +1,6 @@
 import numpy as np
-import numpy
 import torch as pt
+import os 
 
 from transition import Transition
 
@@ -9,7 +9,7 @@ class Policy(pt.nn.Module):
     def __init__(self, path, lr=0.001) -> None:
         super(Policy, self).__init__()
 
-        if path:
+        if path and os.path.exists(path):
             self.model = pt.load(path)
         else:
             self.model = pt.nn.Sequential(
