@@ -12,9 +12,9 @@ import os
 
 
 class Agent:
-    def __init__(self, memory_size, memory_path, sample_size, epsilon, discount, lr, policy, decay_amt, averaging_rate, doubleq) -> None:
+    def __init__(self, memory_size, memory_path, sample_size, epsilon, discount, lr, policy, dq_policy, decay_amt, averaging_rate, doubleq) -> None:
         self.memory = Memory(memory_size)
-        self.policy = Policy(policy, doubleq, lr=lr)
+        self.policy = Policy(policy, dq_policy, doubleq, lr=lr)
 
         self.load_memory(memory_path)
 
@@ -92,7 +92,7 @@ class Agent:
                                              terminal=bool(["terminal"]))
                 
                 self.memory.store(tr)
-                
+
     def double_train(self):
         if not self.memory_filled:
             if not len(self.memory.transition_deque) >= self.sample_size:

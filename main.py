@@ -17,11 +17,16 @@ BLACK = '\033[0m'
 
 DOUBLEQ = True
 
-results = None
+last_episode = 0
+max_returns = 0
+max_returns_episode = 0
+last_steps = []
 
-def save_report(agent, path, results):
-    report = {"max_episodes": str(episodes),
-              "episodes_finished": str(results[0] if results else -1),
+
+def save_report(agent, path):
+    report = {"doubleq": DOUBLEQ,  
+              "max_episodes": str(episodes),
+              "episodes_finished": str(last_episode),
               "max_steps": str(max_steps),
               "max_memory_size": str(memory_size),
               "memory_size": str(len(agent.memory.transition_deque)),
@@ -32,10 +37,11 @@ def save_report(agent, path, results):
               "last_epsilon": str(agent.epsilon),
               "decay": str(decay),
               "max_n_steps": str(last_steps),
-              "last_scores": str([str(x) for x in results[1]] if results else []),
+              "last_scores": str([str(np.round(x, 1)) for x in last_steps]),
               "stop_score": str(stop_score),
-              "highest_score": str(results[3] if results else - 1) ,
-              "highest_score_episode": str(results[2] if results else -1)
+              "highest_score": str(max_returns),
+              "highest_score_episode": str(max_returns_episode),
+              "averaging_rate": str(averaging_rate)
               }
     
     with open(path, "w") as f:
@@ -43,12 +49,17 @@ def save_report(agent, path, results):
 
 try:
     def run_environment(episodes, max_steps, agent, last_steps_n, stop_score):
+        global max_returns
+        global max_returns_episode
+        global last_episode
+        global last_steps
+
         env = gym.make("LunarLander-v2", render_mode="human")
         last_steps = deque(maxlen=last_steps_n)
-        max_returns = 0
-        max_returns_episode = 0
+
 
         for episode in range(episodes):
+            last_episode = episode
             returns = 0
             state, _ = env.reset()
             t1 = datetime.now()
@@ -77,7 +88,7 @@ try:
 
             t2 = datetime.now()
             last_steps.append(returns)
-            if returns > max_returns:
+            if returns > max_returns or episode == 0:
                 max_returns = returns
                 max_returns_episode = episode
 
@@ -105,14 +116,10 @@ try:
         env.close()
         return episode, last_steps, max_returns_episode, max_returns
 
-    if DOUBLEQ: 
-        policy = None
-        # policy = ["./model.pt", "./model_target.pt"]
-    else:
-        policy = None
-        # policy = "./model.pt"
 
-    episodes = 1_000
+    name = ""
+
+    episodes = 300
     max_steps = 1_000
 
     memory_size = 100_000
@@ -120,11 +127,11 @@ try:
 
     lr = 0.001
     discount = 0.99
-    epsilon = 0.02
+    epsilon = 0.1
     decay = 0.996
     averaging_rate = 0.01
     
-    last_steps = 20
+    last_steps_n = 20
     stop_score = 300
 
     main_agent = Agent(epsilon=epsilon, 
@@ -132,24 +139,18 @@ try:
                         memory_size=memory_size, 
                         discount=discount, 
                         lr=lr, 
-                        policy=f".\models\model_{name}.pt",
-                        memory_path=f".\memory\memory_{name}.jsonl",
-                        decay_amt=decay)
+                        policy=f".\\models\\model_{name}.pt",
+                        dq_policy=f".\\models\\model_target_{name}.pt",
+                        memory_path=f".\\memory\\memory_{name}.jsonl",
+                        decay_amt=decay,
+                        doubleq=DOUBLEQ,
+                        averaging_rate=averaging_rate)
+
     results = run_environment(episodes=episodes, 
-                       sample_size=sample_size, 
-                       memory_size=memory_size, 
-                       discount=discount, 
-                       lr=lr, 
-                       policy=policy,
-                       decay_amt=decay,
-                       averaging_rate=averaging_rate,
-                       doubleq=DOUBLEQ)
-    run_environment(episodes=episodes, 
                     max_steps=max_steps, 
                     agent=main_agent, 
-                    last_steps_n=last_steps, 
+                    last_steps_n=last_steps_n, 
                     stop_score=stop_score)
-
 
 
 
@@ -158,10 +159,10 @@ except BaseException as e:
 
 finally:
     print("Saving model")
-    main_agent.policy.save_model(f"models/model_{datetime.now().strftime('%m-%d_%H-%M')}.pt", f"models/model_target{datetime.now().strftime('%m-%d_%H-%M')}.pt")
+    main_agent.policy.save_model(f"models/model_{datetime.now().strftime('%m-%d_%H-%M')}.pt", f"models/model_target_{datetime.now().strftime('%m-%d_%H-%M')}.pt")
     main_agent.save_memory(f"memory/memory_{datetime.now().strftime('%m-%d_%H-%M')}.jsonl")
 
     print("saving report")
-    save_report(main_agent, f"reports/report_{datetime.now().strftime('%m-%d_%H-%M')}.json", results)
+    save_report(main_agent, f"reports/report_{datetime.now().strftime('%m-%d_%H-%M')}.json")
 
 
