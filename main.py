@@ -15,6 +15,8 @@ GREEN = '\033[0;37;42m'
 RED = '\033[0;37;41m'
 BLACK = '\033[0m'
 
+DOUBLEQ = True
+
 results = None
 
 def save_report(agent, path, results):
@@ -38,8 +40,6 @@ def save_report(agent, path, results):
     
     with open(path, "w") as f:
         f.write(json.dumps(report, indent=4))
-
-
 
 try:
     def run_environment(episodes, max_steps, agent, last_steps_n, stop_score):
@@ -67,7 +67,12 @@ try:
                     break
 
                 state = next_state
-                agent.train()
+
+                if DOUBLEQ:
+                    agent.double_train()
+                else:
+                    agent.train()
+
                 agent.decay()
 
             t2 = datetime.now()
@@ -100,7 +105,12 @@ try:
         env.close()
         return episode, last_steps, max_returns_episode, max_returns
 
-    name = "NEW"
+    if DOUBLEQ: 
+        policy = None
+        # policy = ["./model.pt", "./model_target.pt"]
+    else:
+        policy = None
+        # policy = "./model.pt"
 
     episodes = 1_000
     max_steps = 1_000
@@ -112,7 +122,8 @@ try:
     discount = 0.99
     epsilon = 0.02
     decay = 0.996
-
+    averaging_rate = 0.01
+    
     last_steps = 20
     stop_score = 300
 
@@ -125,6 +136,15 @@ try:
                         memory_path=f".\memory\memory_{name}.jsonl",
                         decay_amt=decay)
     results = run_environment(episodes=episodes, 
+                       sample_size=sample_size, 
+                       memory_size=memory_size, 
+                       discount=discount, 
+                       lr=lr, 
+                       policy=policy,
+                       decay_amt=decay,
+                       averaging_rate=averaging_rate,
+                       doubleq=DOUBLEQ)
+    run_environment(episodes=episodes, 
                     max_steps=max_steps, 
                     agent=main_agent, 
                     last_steps_n=last_steps, 
@@ -138,12 +158,10 @@ except BaseException as e:
 
 finally:
     print("Saving model")
-    main_agent.policy.save_model(f"models/model_{datetime.now().strftime('%m-%d_%H-%M')}.pt")
+    main_agent.policy.save_model(f"models/model_{datetime.now().strftime('%m-%d_%H-%M')}.pt", f"models/model_target{datetime.now().strftime('%m-%d_%H-%M')}.pt")
     main_agent.save_memory(f"memory/memory_{datetime.now().strftime('%m-%d_%H-%M')}.jsonl")
 
     print("saving report")
     save_report(main_agent, f"reports/report_{datetime.now().strftime('%m-%d_%H-%M')}.json", results)
-
-
 
 
