@@ -115,7 +115,7 @@ try:
         return episode, last_steps, max_returns_episode, max_returns
 
 
-    name = "06-21_21-37" # name of the model
+    name = "06-21_13-17" # name of the model
 
     DOUBLEQ = True # use double q learning?
 
