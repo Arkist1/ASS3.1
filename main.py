@@ -75,9 +75,10 @@ try:
                 next_state, reward, terminated, truncated, _ = env.step(action)
 
                 returns += reward
-                agent.memory.store(
-                    Transition(state, next_state, action, reward, terminated)
-                )
+                if do_train:
+                    agent.memory.store(
+                        Transition(state, next_state, action, reward, terminated)
+                    )
                 # print(len(agent.memory.transition_deque))
                 if terminated or truncated:
                     break
