@@ -1,0 +1,20 @@
+{
+    "doubleq": true,
+    "max_episodes": "400",
+    "episodes_finished": "4",
+    "max_steps": "1000",
+    "max_memory_size": "100000",
+    "memory_size": "100000",
+    "sample_size": "64",
+    "lr": "0.001",
+    "discount": "0.99",
+    "start_epsilon": "0",
+    "last_epsilon": "0",
+    "decay": "0.996",
+    "max_n_steps": "deque([218.48091029000972, 184.8312622400123, 236.75736577821445, 235.67761419969088], maxlen=20)",
+    "last_scores": "['218.5', '184.8', '236.8', '235.7']",
+    "stop_score": "250",
+    "highest_score": "236.75736577821445",
+    "highest_score_episode": "2",
+    "averaging_rate": "0.1"
+}
